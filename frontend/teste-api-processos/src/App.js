@@ -2,7 +2,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { IMaskInput } from "react-imask";
 import upperFirst from "./utilities/UpperFirst";
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axios from "../node_modules/axios/dist/axios.min";
 
 const API_URL = "http://localhost:8080/api";
 
