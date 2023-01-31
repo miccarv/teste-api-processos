@@ -1,7 +1,7 @@
 ## Teste-Api-Processos
 
 ### Sobre:
-Decidi utilizar o framework Spring Boot para o desenvolvimento do backend, assim como o banco de dados H2, pois achei essas opções mais adequadas para o propósito  da aplicação. No período de duas semanas que trabalhei nesse projeto, consegui fazer boa parte do que havia planejado. Se houvesse mais tempo, gostaria de otimizar o método e campos de busca, trabalhar melhor o relacionamento das tabelas colocando os dados das partes do processo em uma tabela individual, melhorar a vizualização dos processos no frontend fornecendo mais detalhes.
+Decidi utilizar o framework Spring Boot para o desenvolvimento do backend, assim como o banco de dados H2, pois achei essas opções mais adequadas para o propósito  da aplicação. No período de duas semanas que trabalhei nesse projeto, consegui fazer boa parte do que havia planejado. Com mais tempo, gostaria de otimizar o método e campos de busca, trabalhar melhor o relacionamento das tabelas colocando os dados das partes do processo em uma tabela individual, melhorar a vizualização dos processos no frontend fornecendo mais detalhes.
 
 ### Testes realizados:
 - Teste de unidade para os métodos GET
