@@ -41,7 +41,7 @@ const App = () => {
       );
       setItems(result.data);
     } catch (error) {
-      if (error.response.status === 404) {
+      if (error.response.status) {
         setSearchStart(false);
         alert("Processo não encontrado");
       }
@@ -106,9 +106,10 @@ const App = () => {
           Processos
         </button>
       </form>
-      {searchStart === false ? (
+      {searchStart === false || items.length === 0 ? (
         <div className="row w-100 mt-3 border p-3">
           <h5 className="mb-4 mt-2">Dados para busca:</h5>
+          <p>1 / Foro de Salvador</p>
           <p>1001353-64.2022.8.26.0268 / Foro de Itapecerica da Serra</p>
         </div>
       ) : (

@@ -1,0 +1,2 @@
+  INSERT INTO processos (cnjnumber, data, juiz, assunto, vara, area, valor, tribunal_origem, partes_principais, todas_partes) VALUES ('1', '20/02/2022', 'João Carlos', 'Direito de imagem', 'Trabalhista', 'Cível', 'R$ 20,000', 'foro de salvador', 'Jonas Silva', 'Jonas Silva, Augusto Ferreira');
+  INSERT INTO movimentacoes(cnjnumber_fk, data, descricao) VALUES ('1', '22/02/2022', 'lorem ipsum dolor sit am lorem ipsum lorem');

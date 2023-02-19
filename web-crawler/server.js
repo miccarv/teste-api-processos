@@ -121,7 +121,7 @@ app.get("/processos/:numeroProcesso", (req, res) => {
       res.send(processoSQL);
     })
     .catch((err) => {
-      console.log(err);
+      console.log(err + " --- Dados não encontrados");
     });
 });
 
