@@ -19,7 +19,6 @@ import com.example.demo.repository.ProcessoRepository;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
 @RestController
 @RequestMapping("/api")
@@ -48,47 +47,49 @@ public class ProcessosController {
 	// Método Get para comparar dados fornecidos pelo usuário com dados do bd e
 	// retornar resultados obtidos.
 
-
 	@GetMapping("/search")
 	public List<Item> searchById(@RequestParam(value = "processoTr", required = false) String processoTr,
-			@RequestParam(value = "processoCnj", required = false) String processoCnj) {
-        
-		// Receber do crawler a string com comando SQL
-		String url = "http://localhost:8081/processos/" + processoCnj;
-		RestTemplate restTemplate = new RestTemplate();
-		String sqlStatement = restTemplate.getForObject(url, String.class);
-
-		try {
-			// Criar conexão com BD H2
-			Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-
-			// Preparar comando SQL para adicionar item
-			PreparedStatement stmt = conn.prepareStatement(sqlStatement);
-			int numRowsAffected = stmt.executeUpdate();
-
-			// Fechar comando e conexão
-			stmt.close();
-			conn.close();
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+			@RequestParam(value = "processoCnj", required = false) String processoCnj){
 
 		List<Item> items = getItems();
 		List<Item> searchById = new ArrayList<>();
 
 		if (processoTr != null) {
-
 			for (Item item : items) {
 				if (item.getTribunalOrigem().equals(processoTr)) {
 					searchById.add(item);
 				}
 			}
+		}
 
-		} else {
+		if (processoCnj != null) {
+			boolean found = false;
 			for (Item item : items) {
 				if (item.getCnjNumber().equals(processoCnj)) {
 					searchById.add(item);
+					found = true;
+					break;
+				}
+			}
+
+			if (!found) {
+				try {
+					// Receber do crawler a string com comando SQL
+					String url = "http://localhost:8081/processos/" + processoCnj;
+					RestTemplate restTemplate = new RestTemplate();
+					String sqlStatement = restTemplate.getForObject(url, String.class);
+					
+					Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+	  
+					// Preparar comando SQL para adicionar item
+					PreparedStatement stmt = conn.prepareStatement(sqlStatement);
+					int numRowsAffected = stmt.executeUpdate();
+	  
+					// Fechar comando e conexão
+					stmt.close();
+					conn.close();
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 		}
@@ -100,7 +101,5 @@ public class ProcessosController {
 		} else {
 			return searchById;
 		}
-
 	}
-
 }
