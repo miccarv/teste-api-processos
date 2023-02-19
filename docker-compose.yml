@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  crawler:
+    build:
+      context: ./web-crawler
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
+    restart: always
+    ports:
+      - "8081:8081"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
+    restart: always
+    ports:
+      - "3000:3000"
+
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_PROFILES_ACTIVE=production
+    restart: always
+    ports:
+      - "8080:8080"
+
+
