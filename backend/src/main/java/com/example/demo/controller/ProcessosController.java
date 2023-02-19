@@ -21,10 +21,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-
 @RestController
 @RequestMapping("/api")
 
@@ -52,27 +48,28 @@ public class ProcessosController {
 	// Método Get para comparar dados fornecidos pelo usuário com dados do bd e
 	// retornar resultados obtidos.
 
+
 	@GetMapping("/search")
 	public List<Item> searchById(@RequestParam(value = "processoTr", required = false) String processoTr,
 			@RequestParam(value = "processoCnj", required = false) String processoCnj) {
-
+        
+		// Receber do crawler a string com comando SQL
 		String url = "http://localhost:8081/processos/" + processoCnj;
 		RestTemplate restTemplate = new RestTemplate();
 		String sqlStatement = restTemplate.getForObject(url, String.class);
 
 		try {
-			// Create a connection to the H2 in-memory database
+			// Criar conexão com BD H2
 			Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
 
-			// Prepare the SQL statement for adding an item
+			// Preparar comando SQL para adicionar item
 			PreparedStatement stmt = conn.prepareStatement(sqlStatement);
 			int numRowsAffected = stmt.executeUpdate();
 
-			// Close the statement and connection
+			// Fechar comando e conexão
 			stmt.close();
 			conn.close();
 
-			// Return the number of rows affected
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
