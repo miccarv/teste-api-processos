@@ -1,5 +1,5 @@
 ## Teste-Api-Processos
 ### Para executar:
-- Execute o arquivo app.jar em "teste-api-processos/backend/teste-processos-api/target/" com o comando "sudo java -jar app.jar" pelo terminal do Linux. (utilizar Java JRE build 19.0.1 ou superior)
-- Execute os comandos "sudo npm install" e em seguida "sudo npm start" em "teste-api-processos/frontend/teste-api-processos/" também pelo terminal do Linux.
+- Instale o aplicativo Docker Desktop
+- Execute os comandos "docker-compose build" e "docker-compose up -d" no diretório com o arquivo docker-compose.yml
 - Acesse no navegador o endereço "localhost:3000/".
