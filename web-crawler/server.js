@@ -1,19 +1,41 @@
 const express = require("express");
 const rp = require("request-promise");
 const cheerio = require("cheerio");
+const { Client } = require("elasticsearch");
+const PORT = 8081;
+const cors = require("cors");
+
+const client = new Client({
+  host: "http://elasticsearch:9200",
+});
 
 const app = express();
 
-app.get("/processos/:numeroProcesso", (req, res) => {
+app.use(cors());
+
+// Scrapes processo data - Adds it to ES index - Sends data information to H2 database as Sql Statement
+app.get("/processos/:numeroProcesso", async (req, res) => {
+
   const options = {
     uri:
       "https://esaj.tjsp.jus.br/cpopg/show.do?processo.codigo=&processo.foro=&processo.numero=" +
       req.params.numeroProcesso,
-    transform: function (body) {
-      return cheerio.load(body);
-    },
+    transform: (body) => cheerio.load(body),
   };
 
+  // Checks if processo data already exists in ES index
+  const INDEX_CHECK = await client.search({
+    index: "processos",
+    body: {
+      query: {
+        match: {
+          numero: req.params.numeroProcesso,
+        },
+      },
+    },
+  });
+
+  // Scrapes processo data from website
   rp(options)
     .then(($) => {
       const data = [];
@@ -66,7 +88,7 @@ app.get("/processos/:numeroProcesso", (req, res) => {
         );
       });
 
-      let sql = "";
+      let sqlMov = "";
 
       $("#tabelaUltimasMovimentacoes tr").each(function (i, elem) {
         const movimentacao = {
@@ -84,7 +106,7 @@ app.get("/processos/:numeroProcesso", (req, res) => {
               .replace(/\n/g, " ")
         );
 
-        sql += `INSERT INTO movimentacoes(cnjnumber_fk, data, descricao) VALUES ('${
+        sqlMov += `INSERT INTO movimentacoes(cnjnumber_fk, data, descricao) VALUES ('${
           processo.numero
         }', '${movimentacao.data}', '${movimentacao.descricao
           .trim()
@@ -92,9 +114,9 @@ app.get("/processos/:numeroProcesso", (req, res) => {
           .replace(/\n/g, " ")}');`;
       });
 
-      if (processo.numero !== "") {
-        data.push(processo);
-      }
+      processo.numero !== ""
+        ? data.push(processo)
+        : console.log("Processo não encontrado");
 
       const processos = data;
       const processosLength = processos.length;
@@ -114,8 +136,25 @@ app.get("/processos/:numeroProcesso", (req, res) => {
         const todasPartes = processo.todasPartes.join(" - ");
 
         processoSQL +=
-          `INSERT INTO processos (cnjnumber, data, juiz, assunto, vara, area, valor, tribunal_origem, partes_principais, todas_partes) VALUES ('${numero}', '${dataDistribuicao}', '${juiz}', '${assunto}', '${vara}', '${area}', '${valor}', '${foro}', '${partesPrincipais}', '${todasPartes}');` +
-          sql;
+          `INSERT INTO processos (numero, data_distribuicao, juiz, assunto, vara, area, valor, foro, partes_principais, todas_partes) VALUES ('${numero}', '${dataDistribuicao}', '${juiz}', '${assunto}', '${vara}', '${area}', '${valor}', '${foro}', '${partesPrincipais}', '${todasPartes}');` +
+          sqlMov;
+      }
+
+      // if matching "processo" is not found in ES index and data scraped from website exists, add it to ES index
+      if (INDEX_CHECK.hits.total.value === 0 && data.length != 0) {
+        client.index({
+          index: "processos",
+          body: data.find((item) => item),
+        });
+        // if matching "processo" is found in ES index and data scraped from website exists, update it in ES index
+      } else if (INDEX_CHECK.hits.total.value != 0 && data.length != 0) {
+        client.update({
+          index: "processos",
+          id: INDEX_CHECK.hits.hits[0]._id,
+          body: {
+            doc: data.find((item) => item),
+          },
+        });
       }
 
       res.send(processoSQL);
@@ -125,6 +164,44 @@ app.get("/processos/:numeroProcesso", (req, res) => {
     });
 });
 
-app.listen(8081, () => {
-  console.log("Server started on port 8081");
+app.get("/all-processos", async (_req, res) => {
+  try {
+    const body = await client.search({
+      index: "processos",
+      size: 6000,
+    });
+    res.json(body.hits.hits.map((hit) => hit._source));
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+});
+
+app.get("/processos/search/:searchType/:id", async (req, res) => {
+  try {
+    const { searchType } = req.params;
+    const { id } = req.params;
+    const query = searchType === "cnj" ? "numero.keyword" : "foro.keyword";
+    const body = await client.search({
+      body: {
+        query: {
+          term: {
+            [query]: id,
+          },
+        },
+      },
+    });
+    if (body.hits.total.value != 0) {
+      res.json(body.hits.hits.map((hit) => hit._source));
+    } else {
+      res.sendStatus(404);
+    }
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+});
+
+app.listen(PORT, () => {
+  console.log(`Listening at http://localhost:${PORT}`);
 });

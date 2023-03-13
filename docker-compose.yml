@@ -1,7 +1,11 @@
-version: '3'
+version: "3"
+
+networks:
+  my-network:
 
 services:
   crawler:
+    container_name: crawler
     build:
       context: ./web-crawler
       dockerfile: Dockerfile
@@ -10,8 +14,13 @@ services:
     restart: always
     ports:
       - "8081:8081"
+    networks:
+      - my-network
+    depends_on:
+      - elasticsearch
 
   frontend:
+    container_name: frontend
     build:
       context: ./frontend
       dockerfile: Dockerfile
@@ -20,9 +29,13 @@ services:
     restart: always
     ports:
       - "3000:3000"
-
+    networks:
+      - my-network
+    depends_on:
+      - crawler
 
   backend:
+    container_name: backend
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -31,5 +44,27 @@ services:
     restart: always
     ports:
       - "8080:8080"
+    networks:
+      - my-network
 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.6.2
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    networks:
+      - my-network
+
+volumes:
+  esdata:
+    driver: local
 

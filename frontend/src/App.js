@@ -1,10 +1,11 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { IMaskInput } from "react-imask";
-import upperFirst from "./utilities/UpperFirst";
 import React, { useState, useEffect } from "react";
 import axios from "../node_modules/axios/dist/axios.min";
 
-const API_URL = "http://localhost:8080/api";
+const API_URL = "http://localhost:8081/all-processos";
+const API_URL_1 = "http://localhost:8081/processos/search";
+const upperFirst = (str) => str.replace(/\b\w/g, (l) => l.toUpperCase());
 
 const App = () => {
   const [items, setItems] = useState([]);
@@ -16,7 +17,7 @@ const App = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const result = await axios.get(`${API_URL}/items`, {
+      const result = await axios.get(API_URL, {
         headers: {
           "Access-Control-Allow-Origin": "*",
         },
@@ -26,20 +27,38 @@ const App = () => {
     fetchData();
   }, []);
 
+  async function dbUpdate() {
+    if (searchCnj !== "") {
+      try {
+        const request = await axios.get(
+          `http://localhost:8080/api/search?processoCnj=${searchCnj}`,
+          { headers: { "Access-Control-Allow-Origin": "*" } }
+        );
+        return request;
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }
+
   const handleSearch = async (event) => {
     if (searchCnj === "" && searchTribunal === "") {
       return alert("Preencha um dos campos");
     }
+
+    setSearchStart(true);
+
     event.preventDefault();
 
-    setSearchType(searchCnj ? "processoCnj" : "processoTr");
+    setSearchType(searchCnj ? "cnj" : "foro");
     const searchValue = searchCnj || searchTribunal;
     try {
       const result = await axios.get(
-        `${API_URL}/search?${searchType}=${searchValue.toLowerCase()}`,
+        `${API_URL_1}/${searchType}/${searchValue.toLowerCase()}`,
         { headers: { "Access-Control-Allow-Origin": "*" } }
       );
       setItems(result.data);
+      dbUpdate();
     } catch (error) {
       if (error.response.status) {
         setSearchStart(false);
@@ -65,7 +84,7 @@ const App = () => {
           value={searchCnj}
           onChange={(e) => {
             setSearchCnj(e.target.value);
-            setSearchType("processoCnj");
+            setSearchType("cnj");
             setSearchTribunal("");
           }}
         />
@@ -76,7 +95,7 @@ const App = () => {
           value={searchTribunal}
           onChange={(e) => {
             setSearchTribunal(e.target.value);
-            setSearchType("processoTr");
+            setSearchType("foro");
             setSearchCnj("");
           }}
         />
@@ -85,9 +104,6 @@ const App = () => {
           className="btn btn-secondary ms-2 col-2"
           style={{ height: "40px", maxWidth: "10rem" }}
           type="submit"
-          onClick={(e) => {
-            setSearchStart(true);
-          }}
         >
           Buscar
         </button>
@@ -96,7 +112,7 @@ const App = () => {
           style={{ height: "40px", maxWidth: "10rem" }}
           type="button"
           onClick={async (e) => {
-            const result = await axios.get(`${API_URL}/items`, {
+            const result = await axios.get(API_URL, {
               headers: { "Access-Control-Allow-Origin": "*" },
             });
             setItems(result.data);
@@ -109,24 +125,24 @@ const App = () => {
       {searchStart === false || items.length === 0 ? (
         <div className="row w-100 mt-3 border p-3">
           <h5 className="mb-4 mt-2">Dados para busca:</h5>
-          <p>0000000-00.0000.0.00.0000 / Foro de Salvador</p>
           <p>1001353-64.2022.8.26.0268 / Foro de Itapecerica da Serra</p>
         </div>
       ) : (
         <div className="row">
           {items.map((item) => (
-            <div className="mb-4" key={item.cnjNumber}>
+            <div className="mb-4" key={item.numero}>
               <div className="card">
                 <div className="card-header">
                   <h5>Sobre o processo</h5>
                 </div>
                 <div className="card-body">
                   <div className="card-title">
-                    <strong>Número CNJ / Processo:</strong> {item.cnjNumber}
+                    <strong>Número CNJ / Processo:</strong> {item.numero}
                   </div>
                   <div className="card-text">
                     <p>
-                      <strong>Juiz:</strong> {item.juiz}
+                      <strong>Juiz:</strong>{" "}
+                      {upperFirst(item.juiz.toLowerCase())}
                     </p>
                     <p>
                       <strong>Vara:</strong> {item.vara}
@@ -140,20 +156,19 @@ const App = () => {
                     <p>
                       <strong>Área:</strong> {item.area}
                     </p>
-                    <p>
-                      <strong>Nome das partes:</strong> {item.todasPartes}
-                    </p>
+                    {item.todasPartes.map((parte) => (
+                      <p key={parte}>{parte}</p>
+                    ))}
                     <p>
                       <strong>Tribunal de origem:</strong>{" "}
-                      {upperFirst(item.tribunalOrigem)}
+                      {upperFirst(item.foro)}
                     </p>
                     <p>
-                      <strong>Data de início:</strong> {item.data}
+                      <strong>Data de início:</strong> {item.dataDistribuicao}
                     </p>
                     {item.movimentacoes.map((mov) => (
                       <p key={mov.data}>
-                        <strong>Movimentação:</strong> {mov.data} -{" "}
-                        {mov.description}
+                        <strong>Movimentação:</strong> {mov}
                       </p>
                     ))}
                   </div>

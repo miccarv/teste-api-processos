@@ -18,16 +18,16 @@ public class Movimentacoes {
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "cnjnumber_fk", referencedColumnName = "cnjnumber")
+	@JoinColumn(name = "cnjnumber_fk", referencedColumnName = "numero")
 	private Item item;
 
 	private String data;
 	@Column(name = "descricao", length = 5000)
-	private String description;
+	private String descricao;
 
-	public Movimentacoes(String data, String description) {
+	public Movimentacoes(String data, String descricao) {
 		this.data = data;
-		this.description = description;
+		this.descricao = descricao;
 	}
 
 	public Movimentacoes() {
@@ -41,11 +41,11 @@ public class Movimentacoes {
 		this.data = data;
 	}
 
-	public String getDescription() {
-		return description;
+	public String getDescricao() {
+		return descricao;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setDescricao(String descricao) {
+		this.descricao = descricao;
 	}
 }

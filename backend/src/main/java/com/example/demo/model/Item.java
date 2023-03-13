@@ -21,10 +21,10 @@ public class Item {
 	@Column(name = "processo_id", nullable = false, unique = true)
 	private Long id;
 	@NaturalId
-	@Column(name = "cnjnumber")
-	private String cnjNumber;
+	@Column(name = "numero")
+	private String numero;
 	@Column(name = "partes_principais")
-	private String partes;
+	private String partesPrincipais;
 	@Column(name = "todas_partes", length = 5000)
 	private String todasPartes;
 	@Column(name = "area")
@@ -37,28 +37,28 @@ public class Item {
 	private String assunto;
 	@Column(name = "valor")
 	private String valor;
-	@Column(name = "tribunal_origem")
-	private String tribunalOrigem;
-	@Column(name = "data")
-	private String data;
+	@Column(name = "foro")
+	private String foro;
+	@Column(name = "data_distribuicao")
+	private String dataDistribuicao;
 	@OneToMany(mappedBy = "item")
 	private Set<Movimentacoes> movimentacoes;
 
 	public Item() {
 	}
 
-	public Item(String cnjNumber, String partes, String todasPartes, String area, String vara, String juiz,
-			String assunto, String valor, String tribunalOrigem, String data, Set<Movimentacoes> movimentacoes) {
-		this.cnjNumber = cnjNumber;
-		this.partes = partes;
+	public Item(String numero, String partesPrincipais, String todasPartes, String area, String vara, String juiz, String assunto,
+			String valor, String foro, String dataDistribuicao, Set<Movimentacoes> movimentacoes) {
+		this.numero = numero;
+		this.partesPrincipais = partesPrincipais;
 		this.todasPartes = todasPartes;
 		this.area = area;
 		this.vara = vara;
 		this.juiz = juiz;
 		this.assunto = assunto;
 		this.valor = valor;
-		this.tribunalOrigem = tribunalOrigem;
-		this.data = data;
+		this.foro = foro;
+		this.dataDistribuicao = dataDistribuicao;
 		this.movimentacoes = movimentacoes;
 	}
 
@@ -70,20 +70,20 @@ public class Item {
 		this.id = id;
 	}
 
-	public String getCnjNumber() {
-		return cnjNumber;
+	public String getNumero() {
+		return numero;
 	}
 
-	public void setCnjNumber(String cnjNumber) {
-		this.cnjNumber = cnjNumber;
+	public void setNumero(String numero) {
+		this.numero = numero;
 	}
 
-	public String getPartes() {
-		return partes;
+	public String getPartesPrincipais() {
+		return partesPrincipais;
 	}
 
-	public void setPartes(String partes) {
-		this.partes = partes;
+	public void setPartesPrincipais(String partesPrincipais) {
+		this.partesPrincipais = partesPrincipais;
 	}
 
 	public String getTodasPartes() {
@@ -134,20 +134,20 @@ public class Item {
 		this.valor = valor;
 	}
 
-	public String getTribunalOrigem() {
-		return tribunalOrigem;
+	public String getForo() {
+		return foro;
 	}
 
-	public void setTribunalOrigem(String tribunalOrigem) {
-		this.tribunalOrigem = tribunalOrigem;
+	public void setForo(String foro) {
+		this.foro = foro;
 	}
 
-	public String getData() {
-		return data;
+	public String getDataDistribuicao() {
+		return dataDistribuicao;
 	}
 
-	public void setData(String data) {
-		this.data = data;
+	public void setDataDistribuicao(String dataDistribuicao) {
+		this.dataDistribuicao = dataDistribuicao;
 	}
 
 	public Set<Movimentacoes> getMovimentacoes() {

@@ -24,8 +24,7 @@ import java.sql.PreparedStatement;
 @RequestMapping("/api")
 
 // Faz a liberação do CORS para permitir que esta API seja acessada por outro
-// servidor(React).
-
+// servidor.
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class ProcessosController {
 
@@ -37,7 +36,6 @@ public class ProcessosController {
 	private ProcessoRepository repository;
 
 	// Método Get para retornar uma lista de processos.
-
 	@GetMapping("/items")
 	public List<Item> getItems() {
 		return repository.findAll();
@@ -46,26 +44,16 @@ public class ProcessosController {
 
 	// Método Get para comparar dados fornecidos pelo usuário com dados do bd e
 	// retornar resultados obtidos.
-
 	@GetMapping("/search")
-	public List<Item> searchById(@RequestParam(value = "processoTr", required = false) String processoTr,
-			@RequestParam(value = "processoCnj", required = false) String processoCnj){
+	public List<Item> searchById(@RequestParam(value = "processoCnj", required = false) String processoCnj) {
 
 		List<Item> items = getItems();
 		List<Item> searchById = new ArrayList<>();
 
-		if (processoTr != null) {
-			for (Item item : items) {
-				if (item.getTribunalOrigem().equals(processoTr)) {
-					searchById.add(item);
-				}
-			}
-		}
-
 		if (processoCnj != null) {
 			boolean found = false;
 			for (Item item : items) {
-				if (item.getCnjNumber().equals(processoCnj)) {
+				if (item.getNumero().equals(processoCnj)) {
 					searchById.add(item);
 					found = true;
 					break;
@@ -75,16 +63,16 @@ public class ProcessosController {
 			if (!found) {
 				try {
 					// Receber do crawler a string com comando SQL
-					String url = "http://localhost:8081/processos/" + processoCnj;
+					String url = "http://crawler:8081/processos/" + processoCnj;
 					RestTemplate restTemplate = new RestTemplate();
 					String sqlStatement = restTemplate.getForObject(url, String.class);
-					
+
 					Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-	  
+
 					// Preparar comando SQL para adicionar item
 					PreparedStatement stmt = conn.prepareStatement(sqlStatement);
 					int numRowsAffected = stmt.executeUpdate();
-	  
+
 					// Fechar comando e conexão
 					stmt.close();
 					conn.close();
@@ -95,11 +83,11 @@ public class ProcessosController {
 		}
 
 		// Lida com a excessão de resultado não encontrado.
-
 		if (searchById.isEmpty()) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nenhum resultado encontrado");
 		} else {
 			return searchById;
+
 		}
 	}
 }
