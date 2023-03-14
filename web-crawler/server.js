@@ -15,7 +15,6 @@ app.use(cors());
 
 // Scrapes processo data - Adds it to ES index - Sends data information to H2 database as Sql Statement
 app.get("/processos/:numeroProcesso", async (req, res) => {
-
   const options = {
     uri:
       "https://esaj.tjsp.jus.br/cpopg/show.do?processo.codigo=&processo.foro=&processo.numero=" +
@@ -119,42 +118,40 @@ app.get("/processos/:numeroProcesso", async (req, res) => {
         : console.log("Processo não encontrado");
 
       const processos = data;
-      const processosLength = processos.length;
       let processoSQL = "";
 
-      for (let i = 0; i < processosLength; i++) {
-        const processo = processos[i];
-        const numero = processo.numero;
-        const dataDistribuicao = processo.dataDistribuicao;
-        const juiz = processo.juiz;
-        const assunto = processo.assunto;
-        const vara = processo.vara;
-        const area = processo.area;
-        const valor = processo.valor;
-        const foro = processo.foro;
-        const partesPrincipais = processo.partesPrincipais.join(" - ");
-        const todasPartes = processo.todasPartes.join(" - ");
+      processos.forEach((processo) => {
+        const {
+          numero,
+          dataDistribuicao,
+          juiz,
+          assunto,
+          vara,
+          area,
+          valor,
+          foro,
+          partesPrincipais,
+          todasPartes,
+        } = processo;
 
         processoSQL +=
-          `INSERT INTO processos (numero, data_distribuicao, juiz, assunto, vara, area, valor, foro, partes_principais, todas_partes) VALUES ('${numero}', '${dataDistribuicao}', '${juiz}', '${assunto}', '${vara}', '${area}', '${valor}', '${foro}', '${partesPrincipais}', '${todasPartes}');` +
-          sqlMov;
-      }
+          `INSERT INTO processos (numero, data_distribuicao, juiz, assunto, vara, area, valor, foro, partes_principais, todas_partes) VALUES ('${numero}', '${dataDistribuicao}', '${juiz}', '${assunto}', '${vara}', '${area}', '${valor}', '${foro}', '${partesPrincipais.join(
+            " - "
+          )}', '${todasPartes.join(" - ")}');` + sqlMov;
+      });
 
       // if matching "processo" is not found in ES index and data scraped from website exists, add it to ES index
-      if (INDEX_CHECK.hits.total.value === 0 && data.length != 0) {
-        client.index({
-          index: "processos",
-          body: data.find((item) => item),
-        });
-        // if matching "processo" is found in ES index and data scraped from website exists, update it in ES index
-      } else if (INDEX_CHECK.hits.total.value != 0 && data.length != 0) {
-        client.update({
-          index: "processos",
-          id: INDEX_CHECK.hits.hits[0]._id,
-          body: {
-            doc: data.find((item) => item),
-          },
-        });
+      if (data.length !== 0) {
+        const body = data.find((item) => item);
+        if (INDEX_CHECK.hits.total.value === 0) {
+          client.index({ index: "processos", body });
+        } else {
+          client.update({
+            index: "processos",
+            id: INDEX_CHECK.hits.hits[0]._id,
+            body: { doc: body },
+          });
+        }
       }
 
       res.send(processoSQL);
@@ -170,7 +167,10 @@ app.get("/all-processos", async (_req, res) => {
       index: "processos",
       size: 6000,
     });
-    res.json(body.hits.hits.map((hit) => hit._source));
+
+    const processos = body.hits.hits.map((hit) => hit._source);
+
+    res.json(processos);
   } catch (err) {
     console.error(err);
     res.sendStatus(500);
@@ -179,8 +179,7 @@ app.get("/all-processos", async (_req, res) => {
 
 app.get("/processos/search/:searchType/:id", async (req, res) => {
   try {
-    const { searchType } = req.params;
-    const { id } = req.params;
+    const { searchType, id } = req.params;
     const query = searchType === "cnj" ? "numero.keyword" : "foro.keyword";
     const body = await client.search({
       body: {
