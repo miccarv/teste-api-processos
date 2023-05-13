@@ -1,183 +1,94 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import { IMaskInput } from "react-imask";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "../node_modules/axios/dist/axios.min";
+import SearchForm from "./components/SearchForm.js";
+import ProcessoList from "./components/ProcessoList.js";
 
-const API_URL = "http://localhost:8081/all-processos";
-const API_URL_1 = "http://localhost:8081/processos/search";
-const upperFirst = (str) => str.replace(/\b\w/g, (l) => l.toUpperCase());
+const API_URL = "http://localhost:8080/es/";
 
-const App = () => {
-  const [items, setItems] = useState([]);
+function App () {
   const [searchCnj, setSearchCnj] = useState("");
   const [searchTribunal, setSearchTribunal] = useState("");
   const [searchType, setSearchType] = useState("");
-  const CNJ = "0000000-00.0000.0.00.0000";
   const [searchStart, setSearchStart] = useState(false);
+  const [items, setItems] = useState([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const result = await axios.get(API_URL, {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-        },
-      });
-      setItems(result.data);
-    };
-    fetchData();
-  }, []);
-
-  async function dbUpdate() {
-    if (searchCnj !== "") {
-      try {
-        const request = await axios.get(
-          `http://localhost:8080/api/search?processoCnj=${searchCnj}`,
-          { headers: { "Access-Control-Allow-Origin": "*" } }
-        );
-        return request;
-      } catch (error) {
-        console.error(error);
-      }
+  const header = {
+    headers: {
+      "Access-Control-Allow-Origin": "*",
     }
-  }
+  };
 
-  const handleSearch = async (event) => {
-    if (searchCnj === "" && searchTribunal === "") {
-      return alert("Preencha um dos campos");
-    }
+  const handleSearch = async (e) => {
+    e.preventDefault();
 
-    setSearchStart(true);
-
-    event.preventDefault();
-
-    setSearchType(searchCnj ? "cnj" : "foro");
-    const searchValue = searchCnj || searchTribunal;
     try {
-      const result = await axios.get(
-        `${API_URL_1}/${searchType}/${searchValue.toLowerCase()}`,
-        { headers: { "Access-Control-Allow-Origin": "*" } }
-      );
-      setItems(result.data);
-      dbUpdate();
-    } catch (error) {
-      if (error.response.status) {
-        setSearchStart(false);
-        alert("Processo não encontrado");
+      if (searchType === "cnj") {
+        const result = await axios.get(
+          `${API_URL}search-cnj?processoCnj=${searchCnj}`,
+          header
+        );
+        setItems(result.data);
+        setSearchStart(true);
+      } else if (searchType === "foro") {
+        const result = await axios.get(
+          `${API_URL}search-foro?processoForo=${searchTribunal}`,
+          header
+        );
+        setItems(result.data);
+        setSearchStart(true);
       }
+    } catch (error) {
+      alert("resultado não encontrado");
+    }
+  };
+
+  const crawlProcesso = async (e) => {
+    e.preventDefault();
+    const url = `http://localhost:8081/processos/${searchCnj}`;
+    try {
+      const response = await axios.get(url, header);
+      alert("Processo crawled");
+    } catch (error) {
+      console.error(error);
+      alert("Número de processo inválido");
+    }
+  };
+
+  const allProcessos = async (e) => {
+    e.preventDefault();
+    const url = "http://localhost:8080/es/processos";
+    try {
+      const response = await axios.get(url, header);
+      if (!response.data.length == 0) {
+        setItems(response.data);
+        setSearchTribunal("");
+        setSearchCnj("");
+        setSearchStart(true);
+      } else {
+        alert("Nenhum processo cadastrado");
+      }
+    } catch (error) {
+      console.error(error);
     }
   };
 
   return (
-    <div className="container d-flex flex-column justify-content-center">
-      <br />
-      <form
-        className="row w-100 h-50 my-4 py-3 border align-items-center"
-        onSubmit={handleSearch}
-      >
-        <label className="col-2 text-center">Busca por:</label>
-        <IMaskInput
-          type="text"
-          placeholder="Número de CNJ"
-          mask={CNJ}
-          maxLength={25}
-          className="m-2 p-2 col-2"
-          value={searchCnj}
-          onChange={(e) => {
-            setSearchCnj(e.target.value);
-            setSearchType("cnj");
-            setSearchTribunal("");
-          }}
-        />
-        <input
-          type="text"
-          placeholder="Tribunal de origem"
-          className="m-2 p-2 col-2"
-          value={searchTribunal}
-          onChange={(e) => {
-            setSearchTribunal(e.target.value);
-            setSearchType("foro");
-            setSearchCnj("");
-          }}
-        />
-
-        <button
-          className="btn btn-secondary ms-2 col-2"
-          style={{ height: "40px", maxWidth: "10rem" }}
-          type="submit"
-        >
-          Buscar
-        </button>
-        <button
-          className="btn btn-secondary ms-3 col-2"
-          style={{ height: "40px", maxWidth: "10rem" }}
-          type="button"
-          onClick={async (e) => {
-            const result = await axios.get(API_URL, {
-              headers: { "Access-Control-Allow-Origin": "*" },
-            });
-            setItems(result.data);
-            setSearchStart(true);
-          }}
-        >
-          Processos
-        </button>
-      </form>
-      {searchStart === false || items.length === 0 ? (
-        <div className="row w-100 mt-3 border p-3">
-          <h5 className="mb-4 mt-2">Dados para busca:</h5>
-          <p>1001353-64.2022.8.26.0268 / Foro de Itapecerica da Serra</p>
-        </div>
-      ) : (
-        <div className="row">
-          {items.map((item) => (
-            <div className="mb-4" key={item.numero}>
-              <div className="card">
-                <div className="card-header">
-                  <h5>Sobre o processo</h5>
-                </div>
-                <div className="card-body">
-                  <div className="card-title">
-                    <strong>Número CNJ / Processo:</strong> {item.numero}
-                  </div>
-                  <div className="card-text">
-                    <p>
-                      <strong>Juiz:</strong>{" "}
-                      {upperFirst(item.juiz.toLowerCase())}
-                    </p>
-                    <p>
-                      <strong>Vara:</strong> {item.vara}
-                    </p>
-                    <p>
-                      <strong>Assunto:</strong> {item.assunto}
-                    </p>
-                    <p>
-                      <strong>Valor:</strong> {item.valor}
-                    </p>
-                    <p>
-                      <strong>Área:</strong> {item.area}
-                    </p>
-                    {item.todasPartes.map((parte) => (
-                      <p key={parte}>{parte}</p>
-                    ))}
-                    <p>
-                      <strong>Tribunal de origem:</strong>{" "}
-                      {upperFirst(item.foro)}
-                    </p>
-                    <p>
-                      <strong>Data de início:</strong> {item.dataDistribuicao}
-                    </p>
-                    {item.movimentacoes.map((mov) => (
-                      <p key={mov.data}>
-                        <strong>Movimentação:</strong> {mov}
-                      </p>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+    <div className="container mt-5">
+      <h1 className="text-center mb-4">Buscar Processos</h1>
+      <SearchForm
+        handleSearch={handleSearch}
+        searchCnj={searchCnj}
+        setSearchCnj={setSearchCnj}
+        searchTribunal={searchTribunal}
+        setSearchTribunal={setSearchTribunal}
+        searchType={searchType}
+        setSearchType={setSearchType}
+        searchStart={searchStart}
+        crawlProcesso={crawlProcesso}
+        allProcessos={allProcessos}
+      />
+      <ProcessoList searchStart={searchStart} items={items} />
     </div>
   );
 };

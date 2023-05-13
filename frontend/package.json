@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "async_hooks": "^1.0.0",
     "axios": "^1.2.6",
     "babel": "^6.23.0",
     "bootstrap": "^5.2.3",

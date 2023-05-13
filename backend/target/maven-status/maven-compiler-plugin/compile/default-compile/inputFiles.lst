@@ -1,5 +1,10 @@
-d:\Documents\Projects\teste-api-processos\backend\src\main\java\com\example\demo\model\Movimentacoes.java
-d:\Documents\Projects\teste-api-processos\backend\src\main\java\com\example\demo\model\Item.java
-d:\Documents\Projects\teste-api-processos\backend\src\main\java\com\example\demo\controller\ProcessosController.java
+d:\Documents\Projects\teste-api-processos\backend\src\main\java\com\example\demo\model\Movimentacao.java
+d:\Documents\Projects\teste-api-processos\backend\src\main\java\com\example\demo\model\ElasticSearchDocument.java
+d:\Documents\Projects\teste-api-processos\backend\src\main\java\com\example\demo\controller\MainController.java
+d:\Documents\Projects\teste-api-processos\backend\src\main\java\com\example\demo\repository\MovimentacaoRepository.java
+d:\Documents\Projects\teste-api-processos\backend\src\main\java\com\example\demo\controller\ElasticSearchController.java
 d:\Documents\Projects\teste-api-processos\backend\src\main\java\com\example\demo\ProcessosApiApplication.java
 d:\Documents\Projects\teste-api-processos\backend\src\main\java\com\example\demo\repository\ProcessoRepository.java
+d:\Documents\Projects\teste-api-processos\backend\src\main\java\com\example\demo\model\Processo.java
+d:\Documents\Projects\teste-api-processos\backend\src\main\java\com\example\demo\config\ElasticSearchConfiguration.java
+d:\Documents\Projects\teste-api-processos\backend\src\main\java\com\example\demo\repository\ElasticSearchRepository.java

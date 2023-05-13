@@ -2,25 +2,16 @@
 FROM node:14.17.6-alpine
 
 # Set the working directory to /frontend
-WORKDIR /frontend
+WORKDIR /app
 
 # Copy the package.json and package-lock.json to the container
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install \
-  babel \
-  axios \
-  bootstrap \
-  react \
-  react-dom \
-  react-imask \
-  react-scripts
+RUN npm install
 
 # Copy the rest of the application files to the container
 COPY . .
-
-# Build the app
 
 # Set the command to start the app
 CMD [ "npm", "start" ]

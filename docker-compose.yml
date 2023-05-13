@@ -1,21 +1,16 @@
 version: "3"
 
-networks:
-  my-network:
-
 services:
   crawler:
     container_name: crawler
     build:
-      context: ./web-crawler
+      context: ./crawler
       dockerfile: Dockerfile
     environment:
       - NODE_ENV=production
     restart: always
     ports:
       - "8081:8081"
-    networks:
-      - my-network
     depends_on:
       elasticsearch:
         condition: service_healthy
@@ -30,11 +25,9 @@ services:
     restart: always
     ports:
       - "3000:3000"
-    networks:
-      - my-network
     depends_on:
-      elasticsearch:
-        condition: service_healthy
+      - backend
+      - crawler
 
   backend:
     container_name: backend
@@ -46,8 +39,6 @@ services:
     restart: always
     ports:
       - "8080:8080"
-    networks:
-      - my-network
     depends_on:
       elasticsearch:
         condition: service_healthy
@@ -57,6 +48,8 @@ services:
     container_name: elasticsearch
     environment:
       - discovery.type=single-node
+      - http.cors.enabled=true
+      - http.cors.allow-origin="*"
       - xpack.security.enabled=false
     ports:
       - "9200:9200"
@@ -66,8 +59,6 @@ services:
         hard: -1
     volumes:
       - esdata:/usr/share/elasticsearch/data
-    networks:
-      - my-network
     healthcheck:
       test: ["CMD-SHELL", "curl --silent --fail http://localhost:9200/_cluster/health || exit 1"]
       interval: 30s
