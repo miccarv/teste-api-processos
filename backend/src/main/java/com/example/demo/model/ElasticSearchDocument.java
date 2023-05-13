@@ -3,6 +3,8 @@ package com.example.demo.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,6 +27,8 @@ public class ElasticSearchDocument {
     private String foro;
     private String dataDistribuicao;
     private Movimentacao[] _movimentacoes;
+    @JsonIgnore
+    private String query;
 
     public ElasticSearchDocument (Processo processo) {
         this.id = processo.getId().toString();

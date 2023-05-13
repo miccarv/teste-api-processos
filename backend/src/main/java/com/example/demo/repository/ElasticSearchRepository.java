@@ -15,7 +15,6 @@ import com.example.demo.model.Processo;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.DeleteRequest;
 import co.elastic.clients.elasticsearch.core.DeleteResponse;
-import co.elastic.clients.elasticsearch.core.ExistsRequest;
 import co.elastic.clients.elasticsearch.core.GetResponse;
 import co.elastic.clients.elasticsearch.core.IndexResponse;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
@@ -30,17 +29,16 @@ public class ElasticSearchRepository {
     private ElasticsearchClient elasticsearchClient;
 
     private static final String INDEX_NAME = "processos";
-
-    public String createIndex() throws IOException {
-        elasticsearchClient.indices().create(i -> i.index(INDEX_NAME));
-        return new StringBuilder("Index " + INDEX_NAME + " has been successfully created.").toString();
-    }
-
+    
     public String createOrUpdateDocument(Processo processo) throws IOException {
-        createIndex();
+        boolean exists = elasticsearchClient.indices().exists(e -> e.index(INDEX_NAME)).value();
+        if (!exists) {
+            elasticsearchClient.indices().create(i -> i.index(INDEX_NAME));
+        }
+    
         processo.setId((long) 1);
         ElasticSearchDocument document = new ElasticSearchDocument(processo);
-        List<ElasticSearchDocument> documentByNumero = getDocumentByNumero(processo.getNumero());
+        List<ElasticSearchDocument> documentByNumero = getDocumentByNumero(document.getNumero());
 
         if (documentByNumero.isEmpty())
             document.setId(String.valueOf(searchAllDocuments().size() + 1));
@@ -85,7 +83,6 @@ public class ElasticSearchRepository {
     }
 
     public List<ElasticSearchDocument> searchAllDocuments() throws IOException {
-        createIndex();
         SearchRequest searchRequest = SearchRequest.of(s -> s.index(INDEX_NAME));
         SearchResponse searchResponse = elasticsearchClient.search(searchRequest, ElasticSearchDocument.class);
         List<Hit> hits = searchResponse.hits().hits();

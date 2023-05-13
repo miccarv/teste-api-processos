@@ -69,6 +69,7 @@ function App () {
         alert("Nenhum processo cadastrado");
       }
     } catch (error) {
+      alert("Nenhum processo cadastrado");
       console.error(error);
     }
   };
