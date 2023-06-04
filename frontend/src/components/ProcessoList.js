@@ -1,12 +1,12 @@
 import React from "react";
- 
+
 const upperFirst = (str) => str.replace(/\b\w/, (l) => l.toUpperCase());
 
-const ProcessoList = ({ items, searchStart }) => {
-  return items.map((item) => (
+const ProcessoList = ({ searchStart, processos }) => {
+  return processos.map((processo) => (
     <div
       className={`mb-4 ${searchStart === false ? "invisible" : ""}`}
-      key={item.numero}
+      key={processo.numero}
     >
       <div className="card">
         <div className="card-header">
@@ -14,34 +14,34 @@ const ProcessoList = ({ items, searchStart }) => {
         </div>
         <div className="card-body">
           <div className="card-title">
-            <strong>Número CNJ / Processo:</strong> {item.numero}
+            <strong>Número CNJ / Processo:</strong> {processo.numero}
           </div>
           <div className="card-text">
             <p>
-              <strong>Juiz:</strong> {upperFirst(item.juiz.toLowerCase())}
+              <strong>Juiz:</strong> {upperFirst(processo.juiz.toLowerCase())}
             </p>
             <p>
-              <strong>Vara:</strong> {item.vara}
+              <strong>Vara:</strong> {processo.vara}
             </p>
             <p>
-              <strong>Assunto:</strong> {item.assunto}
+              <strong>Assunto:</strong> {processo.assunto}
             </p>
             <p>
-              <strong>Valor:</strong> {item.valor}
+              <strong>Valor:</strong> {processo.valor}
             </p>
             <p>
-              <strong>Área:</strong> {item.area}
+              <strong>Área:</strong> {processo.area}
             </p>
             <p>
-            <strong>Todas as Partes:</strong> {item.todasPartes}
+              <strong>Todas as Partes:</strong> {processo.todasPartes}
             </p>
             <p>
-              <strong>Tribunal de origem:</strong> {upperFirst(item.foro)}
+              <strong>Tribunal de origem:</strong> {upperFirst(processo.foro)}
             </p>
             <p>
-              <strong>Data de início:</strong> {item.dataDistribuicao}
+              <strong>Data de início:</strong> {processo.dataDistribuicao}
             </p>
-            {item._movimentacoes.map((mov) => (
+            {processo._movimentacoes.map((mov) => (
               <p key={mov.index}>
                 <strong>Movimentação:</strong> {mov.data} - {mov.descricao}
               </p>

@@ -28,7 +28,7 @@ public class MainController {
         return processoRepository.findAll();
     }
 
-    @PostMapping("/add-processo")
+    @PostMapping("/processos")
     public void addProcessoToDatabase(@RequestBody Processo processo) {
         Processo matchedProcesso = processoRepository.findByNumero(processo.getNumero());
         if (matchedProcesso != null) processo.setId(matchedProcesso.getId());

@@ -29,13 +29,13 @@ public class ElasticSearchRepository {
     private ElasticsearchClient elasticsearchClient;
 
     private static final String INDEX_NAME = "processos";
-    
+
     public String createOrUpdateDocument(Processo processo) throws IOException {
-        boolean exists = elasticsearchClient.indices().exists(e -> e.index(INDEX_NAME)).value();
-        if (!exists) {
+        boolean indexExists = elasticsearchClient.indices().exists(e -> e.index(INDEX_NAME)).value();
+        if (!indexExists) {
             elasticsearchClient.indices().create(i -> i.index(INDEX_NAME));
         }
-    
+
         processo.setId((long) 1);
         ElasticSearchDocument document = new ElasticSearchDocument(processo);
         List<ElasticSearchDocument> documentByNumero = getDocumentByNumero(document.getNumero());
@@ -52,6 +52,7 @@ public class ElasticSearchRepository {
         } else if (response.result().name().equals("Updated")) {
             return new StringBuilder("Document has been successfully updated.").toString();
         }
+
         return new StringBuilder("Error while performing the operation.").toString();
 
     }

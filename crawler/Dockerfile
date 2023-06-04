@@ -9,9 +9,8 @@ COPY package*.json ./
 
 # Install dependencies
 RUN npm install
-# RUN npm i -S request request-promise cheerio express cors
 
-# Copy the rest of the application code to the container
+# Copy the rest of the application code to the container except node_modules
 COPY . .
 
 # Expose the port on which the application will listen

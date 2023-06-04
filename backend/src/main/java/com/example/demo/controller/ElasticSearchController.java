@@ -31,7 +31,7 @@ public class ElasticSearchController {
 		return elasticSearchRepository.searchAllDocuments();
 	}
 
-	@PostMapping("/add-processo")
+	@PostMapping("/processos")
 	public void addProcessoToDatabase(@RequestBody Processo processo) throws IOException {
 		elasticSearchRepository.createOrUpdateDocument(processo);
 	}

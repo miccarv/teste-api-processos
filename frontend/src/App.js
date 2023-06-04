@@ -6,36 +6,35 @@ import ProcessoList from "./components/ProcessoList.js";
 
 const API_URL = "http://localhost:8080/es/";
 
-function App () {
+const headers = {
+  headers: {
+    "Access-Control-Allow-Origin": "*",
+  },
+};
+
+function App() {
   const [searchCnj, setSearchCnj] = useState("");
   const [searchTribunal, setSearchTribunal] = useState("");
   const [searchType, setSearchType] = useState("");
   const [searchStart, setSearchStart] = useState(false);
-  const [items, setItems] = useState([]);
-
-  const header = {
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-    }
-  };
+  const [processos, setProcessos] = useState([]);
 
   const handleSearch = async (e) => {
     e.preventDefault();
-
     try {
-      if (searchType === "cnj") {
+      if (searchType == "cnj") {
         const result = await axios.get(
           `${API_URL}search-cnj?processoCnj=${searchCnj}`,
-          header
+          headers
         );
-        setItems(result.data);
+        setProcessos(result.data);
         setSearchStart(true);
-      } else if (searchType === "foro") {
+      } else if (searchType == "foro") {
         const result = await axios.get(
           `${API_URL}search-foro?processoForo=${searchTribunal}`,
-          header
+          headers
         );
-        setItems(result.data);
+        setProcessos(result.data);
         setSearchStart(true);
       }
     } catch (error) {
@@ -47,21 +46,23 @@ function App () {
     e.preventDefault();
     const url = `http://localhost:8081/processos/${searchCnj}`;
     try {
-      const response = await axios.get(url, header);
-      alert("Processo crawled");
+      const response = await axios.get(url, headers);
+      response.status === 200
+        ? alert("Processo crawled")
+        : alert("Não foi possível crawlear o processo");
     } catch (error) {
-      console.error(error);
+      console.error(error.status);
       alert("Número de processo inválido");
     }
   };
 
-  const allProcessos = async (e) => {
+  const getProcessos = async (e) => {
     e.preventDefault();
     const url = "http://localhost:8080/es/processos";
     try {
-      const response = await axios.get(url, header);
+      const response = await axios.get(url, headers);
       if (!response.data.length == 0) {
-        setItems(response.data);
+        setProcessos(response.data);
         setSearchTribunal("");
         setSearchCnj("");
         setSearchStart(true);
@@ -87,11 +88,11 @@ function App () {
         setSearchType={setSearchType}
         searchStart={searchStart}
         crawlProcesso={crawlProcesso}
-        allProcessos={allProcessos}
+        allProcessos={getProcessos}
       />
-      <ProcessoList searchStart={searchStart} items={items} />
+      <ProcessoList searchStart={searchStart} processos={processos} />
     </div>
   );
-};
+}
 
 export default App;

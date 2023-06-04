@@ -42,7 +42,6 @@ public class ElasticSearchDocument {
         this.valor = processo.getValor();
         this.foro = processo.getForo();
         this.dataDistribuicao = processo.getDataDistribuicao();
-        //convert Movimentacoes list to array
         this._movimentacoes = processo.getMovimentacoes().toArray(new Movimentacao[processo.getMovimentacoes().size()]);
     }
     
