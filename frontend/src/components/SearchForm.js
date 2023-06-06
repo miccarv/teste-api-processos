@@ -1,18 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 import { IMaskInput } from "react-imask";
+import { searchByCnjOrForo } from "../api/searchByCnjOrForo";
+import { crawlProcesso } from "../handlerFunctions/crawlProcessos";
 
 const CNJ = "0000000-00.0000.0.00.0000";
 
-const SearchForm = ({
-  handleSearch,
-  searchCnj,
-  setSearchCnj,
-  searchTribunal,
-  setSearchTribunal,
-  setSearchType,
-  crawlProcesso,
-  allProcessos,
-}) => {
+const SearchForm = ({ setSearchStart, setProcessos }) => {
+  const [searchCnj, setSearchCnj] = useState("");
+  const [searchTribunal, setSearchTribunal] = useState("");
+  const [searchType, setSearchType] = useState("");
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    try {
+      const searchValue = searchCnj || searchTribunal;
+      const result = await searchByCnjOrForo(searchType, searchValue);
+      setProcessos(result);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <form
       className="d-flex flex-wrap justify-content-evenly mb-3 p-3 border align-items-center bg-light rounded"
@@ -58,7 +66,10 @@ const SearchForm = ({
         <button
           className="btn btn-secondary mx-2 my-2 w-100"
           type="button"
-          onClick={allProcessos}
+          onClick={(e) => {
+            e.preventDefault();
+            setSearchStart(true);
+          }}
         >
           Processos
         </button>
