@@ -2,7 +2,8 @@ const rp = require("request-promise");
 const cheerio = require("cheerio");
 const sendMessage = require("../rabbitmq/sendMessage");
 
-const OPTIONS_REQUEST = "https://esaj.tjsp.jus.br/cpopg/show.do?processo.codigo=&processo.foro=&processo.numero=";
+const OPTIONS_REQUEST =
+  "https://esaj.tjsp.jus.br/cpopg/show.do?processo.codigo=&processo.foro=&processo.numero=";
 
 module.exports = async (req, res) => {
   const options = {
@@ -11,7 +12,9 @@ module.exports = async (req, res) => {
   };
 
   rp(options)
-    .catch(() => {throw new Error("errooooo")})
+    .catch((err) => {
+      throw new Error(err);
+    })
     .then(($) => {
       if ($("#numeroProcesso") == "")
         throw new Error("Não foi possível encontrar processo");
@@ -60,7 +63,7 @@ module.exports = async (req, res) => {
         processoCrawleado.movimentacoes.push(movimentacao);
       });
 
-      //sendMessage(JSON.stringify(processoCrawleado)).catch(err => console.error(err));
+      sendMessage(JSON.stringify(processoCrawleado)).catch(err => console.error(err));
 
       res.status(200).send(processoCrawleado);
     })
