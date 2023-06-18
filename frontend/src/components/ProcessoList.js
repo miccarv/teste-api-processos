@@ -1,6 +1,6 @@
 import React from "react";
 
-const upperFirst = (str) => str.replace(/\b\w/, (l) => l.toUpperCase());
+const upperFirst = (str) => str.replace(/\b(\w)/, (l) => l.toUpperCase());
 
 const ProcessoList = ({ processos }) => {
   return processos === undefined || null || processos.length === 0 ? (

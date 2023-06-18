@@ -6,7 +6,7 @@ const API_URL = process.env.REACT_APP_API_PROCESSOS_URL;
 export const getProcessos = async () => {
   try {
     const response = await axios.get(API_URL, headers);
-    if (!response.data.length == 0) {
+    if (response.data.length > 0) {
       return response.data;
     } else {
       alert("Nenhum processo cadastrado");

@@ -9,12 +9,12 @@ export const searchByCnjOrForo = async (searchType, searchValue) => {
       ? "search-cnj?processoCnj="
       : "search-foro?processoForo=";
   try {
-    const result = await axios.get(
-      `${API_URL}${searchQuery}${searchValue}`,
+    const response = await axios.get(
+      `${API_URL}/${searchQuery}${searchValue}`,
       headers
     );
-    return result.status === 200
-      ? result.data
+    return response.status === 200
+      ? response.data
       : alert("Não foi possível encontrar processo");
   } catch (err) {
     console.error(err);

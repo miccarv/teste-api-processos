@@ -4,7 +4,7 @@ import { headers } from "../api/headers";
 const API_URL = process.env.REACT_APP_API_CRAWLER_URL;
 
 export const crawlProcesso = async (searchCnj) => {
-  const url = `${API_URL}${searchCnj}`;
+  const url = `${API_URL}/${searchCnj}`;
   try {
     const response = await axios.get(url, headers);
     response.status === 200

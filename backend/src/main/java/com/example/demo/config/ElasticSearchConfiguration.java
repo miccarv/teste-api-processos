@@ -4,6 +4,8 @@ import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
@@ -29,6 +31,11 @@ public class ElasticSearchConfiguration {
     public ElasticsearchClient getElasticsearchClient() {
         ElasticsearchClient client = new ElasticsearchClient(getElasticsearchTransport());
         return client;
+    }
+
+    @Bean
+    public ElasticsearchOperations getElasticsearchTemplate() {
+        return new ElasticsearchTemplate(getElasticsearchClient());
     }
 
 }
