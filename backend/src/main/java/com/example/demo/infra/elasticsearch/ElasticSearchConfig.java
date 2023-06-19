@@ -1,4 +1,4 @@
-package com.example.demo.config;
+package com.example.demo.infra.elasticsearch;
 
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
@@ -13,7 +13,7 @@ import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 
 @Configuration
-public class ElasticSearchConfiguration {
+public class ElasticSearchConfig {
     @Bean
     public RestClient getRestClient() {
         RestClient restClient = RestClient.builder(

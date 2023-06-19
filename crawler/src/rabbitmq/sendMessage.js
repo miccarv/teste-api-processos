@@ -13,10 +13,8 @@ module.exports = async function sendMessage(message) {
         throw err;
       }
 
-      channel.purgeQueue(queue);
-
       channel.assertQueue(queue, {
-        durable: false,
+        durable: true,
       });
 
       channel.sendToQueue(queue, Buffer.from(message));
