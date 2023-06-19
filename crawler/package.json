@@ -7,7 +7,7 @@
     "dev": "nodemon server",
     "prod": "node server"
   },
-  "author": "",
+  "author": "miccarv",
   "license": "ISC",
   "dependencies": {
     "amqplib": "^0.10.3",
