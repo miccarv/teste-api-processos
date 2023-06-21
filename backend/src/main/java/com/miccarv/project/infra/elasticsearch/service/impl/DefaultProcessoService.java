@@ -28,17 +28,21 @@ public class DefaultProcessoService implements ProcessoService {
     }
 
     @Override
-    public List<ProcessoDoc> findByAuthor(String foro) {
-        throw new UnsupportedOperationException("Unimplemented method 'findByAuthor'");
+    public List<ProcessoDoc> findByForo(String foro) {
+        return elasticSearchRepository.findByForo(foro);
     }
 
     @Override
     public List<ProcessoDoc> findByNumero(String numero) {
-        throw new UnsupportedOperationException("Unimplemented method 'findByNumero'");
+        return elasticSearchRepository.findByNumero(numero);
     }
 
     @Override
     public ProcessoDoc create(ProcessoDoc processo) throws IOException {
+        List<ProcessoDoc> matchedProcesso = findByNumero(processo.getNumero());
+        if (matchedProcesso.size() >= 1) {
+            processo.setId(matchedProcesso.get(0).getId());
+        }
         return elasticSearchRepository.save(processo);
     }
 

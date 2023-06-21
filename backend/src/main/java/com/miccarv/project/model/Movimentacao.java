@@ -17,26 +17,23 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Data
-@Entity
-@Table(name = "movimentacoes")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
+@Data
+@Entity
+@Table(name = "movimentacoes")
 public class Movimentacao {
     @Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-
 	@JsonBackReference
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "cnjnumber_fk", referencedColumnName = "numero")
 	private Processo processo;
-
 	private String data;
-
-	@Column(name = "descricao", length = 5000)
+	@Column(length = 5000)
 	private String descricao;
 
 	public Movimentacao(String data, String descricao, Processo processo) {

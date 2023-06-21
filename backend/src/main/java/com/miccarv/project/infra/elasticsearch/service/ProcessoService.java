@@ -12,7 +12,7 @@ public interface ProcessoService {
 
     List<ProcessoDoc> getAll();
 
-    List<ProcessoDoc> findByAuthor(String foro);
+    List<ProcessoDoc> findByForo(String foro);
 
     List<ProcessoDoc> findByNumero(String numero);
 

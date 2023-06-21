@@ -20,6 +20,7 @@ import com.miccarv.project.repository.ProcessoRepository;
 @RequestMapping("/h2")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class ProcessoController {
+
     @Autowired
     private ProcessoRepository processoRepository;
 
@@ -31,23 +32,26 @@ public class ProcessoController {
     @PostMapping("/processos")
     public void addProcessoToDatabase(@RequestBody Processo processo) {
         Processo matchedProcesso = processoRepository.findByNumero(processo.getNumero());
-        if (matchedProcesso != null) processo.setId(matchedProcesso.getId());
+        if (matchedProcesso != null)
+            processo.setId(matchedProcesso.getId());
         processoRepository.save(processo);
     }
 
     @GetMapping("/search-foro")
-    public List<Processo> searchByForo(@RequestParam(value = "processoForo") String processoForo)
+    public List<Processo> searchByForo(@RequestParam(value = "foro") String foro)
             throws ResponseStatusException {
-        List<Processo> processosByForo = processoRepository.findByForo(processoForo);
-        if (!processosByForo.isEmpty()) return processosByForo;
+        List<Processo> processosByForo = processoRepository.findByForo(foro);
+        if (!processosByForo.isEmpty())
+            return processosByForo;
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nenhum resultado encontrado");
     }
 
     @GetMapping("/search-cnj")
-    public Processo searchByCnj(@RequestParam(value = "processoCnj") String processoCnj)
+    public Processo searchByCnj(@RequestParam(value = "cnj") String numero)
             throws ResponseStatusException {
-        Processo processoByCnj = processoRepository.findByNumero(processoCnj);
-        if (processoByCnj != null) return processoByCnj;
+        Processo processoByCnj = processoRepository.findByNumero(numero);
+        if (processoByCnj != null)
+            return processoByCnj;
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nenhum resultado encontrado");
     }
 
