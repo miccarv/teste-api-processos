@@ -8,7 +8,7 @@ import com.miccarv.project.model.Movimentacao;
 
 import jakarta.persistence.Id;
 
-@Document(indexName = "processos")
+@Document(indexName = "processos", createIndex = false)
 public class ProcessoDoc {
     @Id
     private String id;

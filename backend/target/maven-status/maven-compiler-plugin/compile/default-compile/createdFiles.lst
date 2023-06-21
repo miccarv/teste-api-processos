@@ -1,0 +1,14 @@
+com/miccarv/project/infra/elasticsearch/service/ESProcessoService.class
+com/miccarv/project/ProjectApplication.class
+com/miccarv/project/infra/elasticsearch/service/impl/DefaultProcessoService.class
+com/miccarv/project/infra/elasticsearch/repository/ElasticSearchRepository.class
+com/miccarv/project/model/Processo.class
+com/miccarv/project/repository/MovimentacaoRepository.class
+com/miccarv/project/infra/elasticsearch/controller/ESProcessoController.class
+com/miccarv/project/service/ProcessoService.class
+com/miccarv/project/repository/ProcessoRepository.class
+com/miccarv/project/controller/ProcessoController.class
+com/miccarv/project/infra/rabbitmq/RabbitMQConfig.class
+com/miccarv/project/infra/rabbitmq/RabbitMQConsumer.class
+com/miccarv/project/infra/elasticsearch/model/ProcessoDoc.class
+com/miccarv/project/model/Movimentacao.class

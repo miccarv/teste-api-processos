@@ -17,10 +17,6 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 @Data
-// @AllArgsConstructor
-// @NoArgsConstructor
-// @Getter
-// @Setter
 @Entity
 @Table(name = "processos")
 public class Processo {
@@ -41,7 +37,7 @@ public class Processo {
 	@Column(name = "data_distribuicao")
 	private String dataDistribuicao;
 	@JsonManagedReference
-	@OneToMany(mappedBy = "processo", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "processo", cascade = CascadeType.PERSIST)
 	private List<Movimentacao> movimentacoes;
 
 }

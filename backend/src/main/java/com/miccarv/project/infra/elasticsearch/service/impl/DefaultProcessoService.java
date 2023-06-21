@@ -8,10 +8,10 @@ import org.springframework.stereotype.Service;
 
 import com.miccarv.project.infra.elasticsearch.model.ProcessoDoc;
 import com.miccarv.project.infra.elasticsearch.repository.ElasticSearchRepository;
-import com.miccarv.project.infra.elasticsearch.service.ProcessoService;
+import com.miccarv.project.infra.elasticsearch.service.ESProcessoService;
 
 @Service
-public class DefaultProcessoService implements ProcessoService {
+public class DefaultProcessoService implements ESProcessoService {
 
     private final ElasticSearchRepository elasticSearchRepository;
 

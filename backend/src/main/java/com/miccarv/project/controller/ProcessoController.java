@@ -3,7 +3,6 @@ package com.miccarv.project.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.miccarv.project.model.Processo;
-import com.miccarv.project.repository.ProcessoRepository;
+import com.miccarv.project.service.ProcessoService;
 
 @RestController
 @RequestMapping("/h2")
@@ -22,37 +21,28 @@ import com.miccarv.project.repository.ProcessoRepository;
 public class ProcessoController {
 
     @Autowired
-    private ProcessoRepository processoRepository;
+    private ProcessoService processoService;
 
     @GetMapping("/processos")
     public List<Processo> getProcessos() {
-        return processoRepository.findAll();
+        return processoService.getProcessos();
     }
 
     @PostMapping("/processos")
     public void addProcessoToDatabase(@RequestBody Processo processo) {
-        Processo matchedProcesso = processoRepository.findByNumero(processo.getNumero());
-        if (matchedProcesso != null)
-            processo.setId(matchedProcesso.getId());
-        processoRepository.save(processo);
+        processoService.create(processo);
     }
 
     @GetMapping("/search-foro")
     public List<Processo> searchByForo(@RequestParam(value = "foro") String foro)
             throws ResponseStatusException {
-        List<Processo> processosByForo = processoRepository.findByForo(foro);
-        if (!processosByForo.isEmpty())
-            return processosByForo;
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nenhum resultado encontrado");
+        return processoService.findByForo(foro);
     }
 
     @GetMapping("/search-cnj")
-    public Processo searchByCnj(@RequestParam(value = "cnj") String numero)
+    public List<Processo> searchByCnj(@RequestParam(value = "cnj") String numero)
             throws ResponseStatusException {
-        Processo processoByCnj = processoRepository.findByNumero(numero);
-        if (processoByCnj != null)
-            return processoByCnj;
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nenhum resultado encontrado");
+        return processoService.findByCnj(numero);
     }
 
 }
