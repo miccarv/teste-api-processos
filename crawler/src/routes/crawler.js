@@ -2,12 +2,12 @@ const rp = require("request-promise");
 const cheerio = require("cheerio");
 const sendMessage = require("../rabbitmq/sendMessage");
 
-const OPTIONS_REQUEST =
+const OPTIONS_REQUEST_URL =
   "https://esaj.tjsp.jus.br/cpopg/show.do?processo.codigo=&processo.foro=&processo.numero=";
 
 module.exports = async (req, res) => {
   const options = {
-    uri: `${OPTIONS_REQUEST}${req.params.numeroProcesso}`,
+    uri: `${OPTIONS_REQUEST_URL}${req.params.numeroProcesso}`,
     transform: (body) => cheerio.load(body),
   };
 

@@ -6,14 +6,14 @@ import { crawlProcesso } from "../handlerFunctions/crawlProcessos";
 const CNJ = "0000000-00.0000.0.00.0000";
 
 const SearchForm = ({ setSearchStart, setProcessos }) => {
-  const [searchCnj, setSearchCnj] = useState("");
-  const [searchTribunal, setSearchTribunal] = useState("");
+  const [cnjNumber, setCnjNumber] = useState("");
+  const [tribunal, setTribunal] = useState("");
   const [searchType, setSearchType] = useState("");
 
   const handleSearch = async (e) => {
     e.preventDefault();
     try {
-      const searchValue = searchCnj || searchTribunal;
+      const searchValue = cnjNumber || tribunal;
       const result = await searchByCnjOrForo(searchType, searchValue);
       setProcessos(result);
     } catch (err) {
@@ -33,22 +33,22 @@ const SearchForm = ({ setSearchStart, setProcessos }) => {
           mask={CNJ}
           maxLength={25}
           className="form-control m-2"
-          value={searchCnj}
+          value={cnjNumber}
           onChange={(e) => {
-            setSearchCnj(e.target.value);
+            setCnjNumber(e.target.value);
             setSearchType("cnj");
-            setSearchTribunal("");
+            setTribunal("");
           }}
         />
         <input
           type="text"
           placeholder="Tribunal / Foro"
           className="form-control m-2"
-          value={searchTribunal}
+          value={tribunal}
           onChange={(e) => {
-            setSearchTribunal(e.target.value);
+            setTribunal(e.target.value);
             setSearchType("foro");
-            setSearchCnj("");
+            setCnjNumber("");
           }}
         />
       </div>

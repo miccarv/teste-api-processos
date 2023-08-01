@@ -17,7 +17,7 @@ public class ProcessoService {
 
     @Autowired
     private ProcessoRepository processoRepository;
-
+    
     public List<Processo> getProcessos() {
         return processoRepository.findAll();
     }

@@ -12,8 +12,7 @@ services:
     ports:
       - "8081:8081"
     depends_on:
-      elasticsearch:
-        condition: service_healthy
+      - backend
 
   frontend:
     container_name: frontend
